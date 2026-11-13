@@ -275,6 +275,75 @@ section.tight{ padding-block:56px }
 }
 .card p{ font-size:14.5px; line-height:1.65; color:var(--muted); margin:0 }
 .card ul{ margin:14px 0 0; padding-left:18px; color:var(--muted); font-size:14px; line-height:1.8 }
+/* Card em retângulo: ocupa toda a largura da grade (alinhado às 3 colunas) */
+.card.wide{ grid-column:1 / -1 }
+.card.wide ul{ columns:3; column-gap:40px }
+.card.wide ul li{ break-inside:avoid }
+@media (max-width:900px){ .card.wide ul{ columns:1 } }
+
+/* Linha do tempo animada: Diagnóstico → Plano → Acompanhamento */
+.card ul.steps{
+  list-style:none; columns:auto; padding:0; margin:26px 0 0;
+  display:grid; grid-template-columns:repeat(3,1fr); position:relative;
+}
+.steps li{ position:relative; padding-top:28px; padding-right:16px }
+.steps::before, .steps::after{
+  content:""; position:absolute; top:5px; left:6px; height:2px;
+  width:calc(66.666% - 0px); border-radius:2px;
+}
+.steps::before{ background:var(--line-strong) }
+.steps::after{
+  background:linear-gradient(90deg,var(--gold),var(--gold-soft));
+  transform-origin:left center; transform:scaleX(0);
+}
+.steps li::before{
+  content:""; position:absolute; top:0; left:0; width:12px; height:12px; border-radius:50%;
+  background:var(--bg-2); border:1.5px solid var(--line-strong); box-sizing:border-box;
+}
+.card.in .steps::after{ animation:stepLine 8s ease-in-out infinite }
+.card.in .steps li:nth-child(1)::before{ animation:stepDot1 8s ease-in-out infinite }
+.card.in .steps li:nth-child(2)::before{ animation:stepDot2 8s ease-in-out infinite }
+.card.in .steps li:nth-child(3)::before{ animation:stepDot3 8s ease-in-out infinite }
+@keyframes stepLine{
+  0%{ transform:scaleX(0); opacity:1 }
+  60%{ transform:scaleX(1) }
+  90%{ transform:scaleX(1); opacity:1 }
+  100%{ transform:scaleX(1); opacity:0 }
+}
+@keyframes stepDot1{
+  0%{ background:var(--bg-2); border-color:var(--line-strong); box-shadow:none }
+  3%,90%{ background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 4px rgba(201,162,75,.18) }
+  100%{ background:var(--bg-2); border-color:var(--line-strong); box-shadow:none }
+}
+@keyframes stepDot2{
+  0%,27%{ background:var(--bg-2); border-color:var(--line-strong); box-shadow:none }
+  31%,90%{ background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 4px rgba(201,162,75,.18) }
+  100%{ background:var(--bg-2); border-color:var(--line-strong); box-shadow:none }
+}
+@keyframes stepDot3{
+  0%,57%{ background:var(--bg-2); border-color:var(--line-strong); box-shadow:none }
+  61%,90%{ background:var(--gold); border-color:var(--gold); box-shadow:0 0 0 4px rgba(201,162,75,.18) }
+  100%{ background:var(--bg-2); border-color:var(--line-strong); box-shadow:none }
+}
+@media (max-width:900px){
+  .card ul.steps{ grid-template-columns:1fr; row-gap:18px }
+  .steps li{ padding:0 0 0 30px }
+  .steps::before, .steps::after{ top:6px; left:5px; width:2px; height:calc(100% - 28px) }
+  .steps::after{ transform-origin:center top; transform:scaleY(0) }
+  .card.in .steps::after{ animation-name:stepLineV }
+  .steps li::before{ top:3px }
+}
+@keyframes stepLineV{
+  0%{ transform:scaleY(0); opacity:1 }
+  60%{ transform:scaleY(1) }
+  90%{ transform:scaleY(1); opacity:1 }
+  100%{ transform:scaleY(1); opacity:0 }
+}
+@media (prefers-reduced-motion:reduce){
+  .card.in .steps::after, .card.in .steps li::before{ animation:none !important }
+  .steps::after{ transform:none }
+  .steps li::before{ background:var(--gold); border-color:var(--gold) }
+}
 
 /* ---------- Stats ---------- */
 .stats{
