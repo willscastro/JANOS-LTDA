@@ -97,15 +97,27 @@
     targets.forEach(function(el){ io.observe(el); });
   }
 
-  // Simple contact form (static — no backend wired up)
+  // Formulário de contato: monta a mensagem e abre o WhatsApp da Janus
+  var WHATSAPP_NUMBER = '5528992575032';
   var form = document.getElementById('contact-form');
   if (form){
     form.addEventListener('submit', function(e){
       e.preventDefault();
+      var v = function(id){ var el = form.elements[id]; return el ? el.value.trim() : ''; };
+      var lines = ['Olá, Janus! Vim pelo site.', '', 'Nome: ' + v('name')];
+      if (v('company')) lines.push('Empresa: ' + v('company'));
+      lines.push('Assunto: ' + v('service'));
+      if (v('phone')) lines.push('Telefone: ' + v('phone'));
+      if (v('email')) lines.push('E-mail: ' + v('email'));
+      lines.push('', v('message'));
+      var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(lines.join('\n'));
+
       var btn = form.querySelector('button[type="submit"]');
       var original = btn.textContent;
-      btn.textContent = 'Enviado ✓';
+      btn.textContent = 'Abrindo o WhatsApp…';
       btn.disabled = true;
+      var win = window.open(url, '_blank', 'noopener');
+      if (!win){ window.location.href = url; }
       setTimeout(function(){
         btn.textContent = original;
         btn.disabled = false;
