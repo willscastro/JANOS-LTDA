@@ -99,7 +99,7 @@
 
   // Formulário de contato.
   // Com FORM_EMAIL preenchido, envia por e-mail (FormSubmit). Vazio: abre o WhatsApp.
-  var FORM_EMAIL = '';
+  var FORM_EMAIL = 'contato@janustec.com.br';
   var WHATSAPP_NUMBER = '5528992575032';
   var form = document.getElementById('contact-form');
   if (form){
@@ -120,6 +120,7 @@
             _template: 'table',
             _captcha: 'false',
             _honey: '',
+            _replyto: v('email'),
             Nome: v('name'),
             Empresa: v('company'),
             'E-mail': v('email'),
