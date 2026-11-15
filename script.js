@@ -97,13 +97,49 @@
     targets.forEach(function(el){ io.observe(el); });
   }
 
-  // Formulário de contato: monta a mensagem e abre o WhatsApp da Janus
+  // Formulário de contato.
+  // Com FORM_EMAIL preenchido, envia por e-mail (FormSubmit). Vazio: abre o WhatsApp.
+  var FORM_EMAIL = '';
   var WHATSAPP_NUMBER = '5528992575032';
   var form = document.getElementById('contact-form');
   if (form){
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var v = function(id){ var el = form.elements[id]; return el ? el.value.trim() : ''; };
+
+      if (FORM_EMAIL){
+        var send = form.querySelector('button[type="submit"]');
+        var label = send.textContent;
+        send.textContent = 'Enviando…';
+        send.disabled = true;
+        fetch('https://formsubmit.co/ajax/' + encodeURIComponent(FORM_EMAIL), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject: 'Novo contato pelo site Janus — ' + v('service'),
+            _template: 'table',
+            _captcha: 'false',
+            _honey: '',
+            Nome: v('name'),
+            Empresa: v('company'),
+            'E-mail': v('email'),
+            Telefone: v('phone'),
+            Assunto: v('service'),
+            Mensagem: v('message')
+          })
+        }).then(function(r){ return r.json(); }).then(function(data){
+          if (data && (data.success === true || data.success === 'true')){
+            send.textContent = 'Mensagem enviada ✓';
+            form.reset();
+          } else { throw new Error('falha'); }
+        }).catch(function(){
+          send.textContent = 'Erro ao enviar. Fale pelo WhatsApp.';
+        }).then(function(){
+          setTimeout(function(){ send.textContent = label; send.disabled = false; }, 3500);
+        });
+        return;
+      }
+
       var lines = ['Olá, Janus! Vim pelo site.', '', 'Nome: ' + v('name')];
       if (v('company')) lines.push('Empresa: ' + v('company'));
       lines.push('Assunto: ' + v('service'));
